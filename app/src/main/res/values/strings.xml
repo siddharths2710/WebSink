@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Web Sink</string>
+    <string name="url_bar">input_url</string>
+    <string name="url_bar_hint">Enter a web url</string>
+    <string name="submit">go</string>
+    <string name="web_sink">web_sink</string>
+</resources>
