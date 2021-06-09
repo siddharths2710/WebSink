@@ -11,6 +11,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.chuckerteam.chucker.api.RetentionManager
 import okhttp3.OkHttpClient
 
 
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         val okHttpClient: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(
                 ChuckerInterceptor.Builder(applicationContext)
-                    .collector(ChuckerCollector(applicationContext))
+                    .collector(getCollector())
                     .maxContentLength(250000L)
                     .alwaysReadResponseBody(true)
                     .build()
@@ -42,6 +43,14 @@ class MainActivity : AppCompatActivity() {
             .build()
         return okHttpClient
     }
+    private fun getCollector(): ChuckerCollector {
+        return ChuckerCollector(
+            context = this,
+            showNotification = true,
+            retentionPeriod = RetentionManager.Period.FOREVER
+        )
+    }
+
     private fun getBrowserView(id: Int): WebView {
         val webSink: WebView = findViewById(id)
         webSink.settings.javaScriptEnabled = true;
