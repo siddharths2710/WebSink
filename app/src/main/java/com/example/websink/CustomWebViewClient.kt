@@ -16,7 +16,6 @@ class CustomWebViewClient(appContext: Context, okHttpClient: OkHttpClient): WebV
         var internalReqBuilder: Request.Builder = Request.Builder()
         if (request != null) {
             internalReqBuilder.url(request.url.toString())
-            internalReqBuilder.method("get", null)
             for((key, value) in request.requestHeaders) {
                 internalReqBuilder.addHeader(key, value)
             }

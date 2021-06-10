@@ -41,7 +41,7 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/menu"
+        android:id="@+id/menu_efab"
         android:text="Options"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,5 +55,34 @@
         android:visibility="visible"
         tools:visibility="visible" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/inspect_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/menu_efab"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="@color/teal_200"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_baseline_visibility_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/pin_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/inspect_fab"
+        android:layout_alignParentEnd="true"
+        android:backgroundTint="@color/teal_200"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_baseline_push_pin_24" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/override_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/pin_fab"
+        android:layout_alignParentEnd="true"
+        android:backgroundTint="@color/teal_200"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_baseline_code_24" />
 
 </RelativeLayout>
