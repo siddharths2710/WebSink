@@ -21,7 +21,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:hint="@+id/url_bar_hint" />
+                android:hint="@string/url_bar_hint" />
 
             <Button
                 android:id="@+id/submit"
@@ -42,18 +42,17 @@
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/menu_efab"
-        android:text="Options"
+        android:text="Menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:layout_marginEnd="10dp"
+        android:visibility="visible"
         android:layout_marginBottom="15dp"
         android:contentDescription="@string/submit"
-        android:src="@drawable/ic_baseline_menu_24"
-        android:visibility="visible"
-        tools:visibility="visible" />
+        app:icon="@drawable/ic_baseline_menu_24" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/inspect_fab"
@@ -66,23 +65,64 @@
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_baseline_visibility_24" />
 
+    <TextView
+        android:id="@+id/inspect_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/menu_efab"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="35dp"
+        android:layout_toLeftOf="@+id/inspect_fab"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="20sp"
+        android:text="Traffic Inspection"
+        android:textStyle="bold" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/pin_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/inspect_fab"
         android:layout_alignParentEnd="true"
+        android:layout_marginBottom="5dp"
         android:backgroundTint="@color/teal_200"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_baseline_push_pin_24" />
+
+    <TextView
+        android:id="@+id/pin_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/inspect_text"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="32dp"
+        android:layout_toLeftOf="@+id/pin_fab"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="20sp"
+        android:text="Certificate Pinning"
+        android:textStyle="bold" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/override_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/pin_fab"
         android:layout_alignParentEnd="true"
+        android:layout_marginBottom="5dp"
         android:backgroundTint="@color/teal_200"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_baseline_code_24" />
 
+    <TextView
+        android:id="@+id/override_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/pin_text"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="32dp"
+        android:layout_toLeftOf="@+id/pin_fab"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="20sp"
+        android:text="URL Override"
+        android:textStyle="bold" />
 </RelativeLayout>
