@@ -1,7 +1,10 @@
 package com.example.websink
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -18,20 +21,22 @@ import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
+import java.io.IOException
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 
 /*
 * Functionalities of WebSink Web Honeypot:
 * 1) Domain/URL Override
-* 2) Certificate Pinning functionality
+* 2) Certificate Pinning functionality (HPKP)
 * 3) Traffic inspection
 * */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var httpClient: OkHttpClient
+    private lateinit var httpClientHandler: Handler
+    private lateinit var chuckerIntent: Intent
     private lateinit var submitBtn: Button
     private lateinit var browserView: WebView
     private lateinit var inputAddressField: EditText
@@ -49,34 +54,52 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        configureInit()
         configureMenuBehaviourInit()
-        httpClient = getHttpClient()
-        browserView = getBrowserView(R.id.web_sink)
-        inputAddressField = findViewById<EditText>(R.id.url_bar)
-        submitBtn = findViewById<Button>(R.id.submit)
-        browserView.webViewClient = CustomWebViewClient(applicationContext, httpClient)
         browserView.loadUrl("https://ipchicken.com")
 
         submitBtn.setOnClickListener {
             val addr = inputAddressField.text.toString()
-            val notifyInvalidAddr = Toast.makeText(applicationContext, "Invalid URL $addr", Toast.LENGTH_SHORT)
             if(addr.isNotEmpty() && isValidFqdn(addr)) {
                 val req = Request.Builder().url(addr).build()
                 try {
-                    val resp = httpClient.newCall(req).execute()
-                    browserView.loadDataWithBaseURL(addr, resp.body().toString(), "text/html", "UTF-8", null)
+                    val callObj = httpClient.newCall(req)
+                    callObj.enqueue(object : Callback {
+                        override fun onFailure(call: Call, e: IOException) {
+                            e.printStackTrace()
+                        }
+
+                        override fun onResponse(call: Call, response: Response) {
+                            response.use {
+                                if(!response.isSuccessful) throw IOException("Unexpected code $response")
+                                httpClientHandler.post {
+                                    browserView.loadDataWithBaseURL(addr, response.body().toString(),
+                                                "text/html", "UTF-8", null)
+                                }
+                            }
+                        }
+                    })
                 } catch (e: IllegalArgumentException) {
-                    //notifyInvalidAddr.show()
+                    Toast.makeText(applicationContext, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("onCreate", "addr: $addr")
                     e.printStackTrace()
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-
             } else {
-                notifyInvalidAddr.show()
+                Toast.makeText(applicationContext, "Invalid URL $addr", Toast.LENGTH_SHORT).show()
             }
         }
 
+    }
+    private fun configureInit() {
+        httpClient = getHttpClient()
+        httpClientHandler = Handler(Looper.myLooper()!!)
+        chuckerIntent = Chucker.getLaunchIntent(applicationContext)
+        browserView = getBrowserView(R.id.web_sink)
+        inputAddressField = findViewById<EditText>(R.id.url_bar)
+        submitBtn = findViewById<Button>(R.id.submit)
+        browserView.webViewClient = CustomWebViewClient(applicationContext, httpClient)
     }
     private fun configureMenuBehaviourInit() {
         mMenuFab = findViewById(R.id.menu_efab)
@@ -91,20 +114,17 @@ class MainActivity : AppCompatActivity() {
         toggleVisibility()
 
         mMenuFab.setOnClickListener {
-            if(!areFabsVisibile) {
+            if(!areFabsVisibile)
                 mMenuFab.extend()
-                toggleVisibility()
-                areFabsVisibile = true
-            } else {
+            else
                 mMenuFab.shrink()
-                toggleVisibility()
-                areFabsVisibile = false
-            }
+            areFabsVisibile = !areFabsVisibile
+            toggleVisibility()
         }
 
         mInspectFab.setOnClickListener {
             //Inspect traffic
-            startActivity(Chucker.getLaunchIntent(applicationContext))
+            startActivity(chuckerIntent)
         }
 
         mPinFab.setOnClickListener {
@@ -119,16 +139,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun toggleVisibility() {
         val isVisibleObj = if(areFabsVisibile) View.VISIBLE else View.GONE
-        mInspectFab.visibility = isVisibleObj
-        mPinFab.visibility = isVisibleObj
-        mOverrideFab.visibility = isVisibleObj
         mInspectText.visibility = isVisibleObj
         mPinText.visibility = isVisibleObj
         mOverrideText.visibility = isVisibleObj
+        if(areFabsVisibile) {
+            mInspectFab.show()
+            mPinFab.show()
+            mOverrideFab.show()
+        } else {
+            mInspectFab.hide()
+            mPinFab.hide()
+            mOverrideFab.hide()
+        }
     }
 
     private fun isValidFqdn(domain: String): Boolean {
-        //val domainRegex = Regex("^(((([A-Za-z0-9]+){1,63}\\.)|(([A-Za-z0-9]+(\\-)+[A-Za-z0-9]+){1,63}\\.))+){1,255}$")
+        val domainRegex = Regex("^(((([A-Za-z0-9]+){1,63}\\.)|(([A-Za-z0-9]+(\\-)+[A-Za-z0-9]+){1,63}\\.))+){1,255}$")
         return true
     }
 
