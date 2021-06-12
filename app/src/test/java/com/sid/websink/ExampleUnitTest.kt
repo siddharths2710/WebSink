@@ -1,4 +1,4 @@
-package com.example.websink
+package com.sid.websink
 
 import org.junit.Test
 

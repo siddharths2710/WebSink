@@ -4,4 +4,7 @@
     <string name="url_bar_hint">Enter a web url</string>
     <string name="submit">go</string>
     <string name="web_sink">web_sink</string>
+    <string name="add_pinner_note">Please add trusted X.509-based CA certificates</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

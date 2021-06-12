@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_nav"
+    app:startDestination="@id/listDomainOverrideFragment">
+
+    <fragment
+        android:id="@+id/listDomainOverrideFragment"
+        android:name="com.sid.websink.fragments.list.listDomainOverrideFragment"
+        android:label="Domain Mappings"
+        tools:layout="@layout/fragment_list_domain_override" >
+        <action
+            android:id="@+id/action_listDomainOverrideFragment_to_addDomainOverrideFragment"
+            app:destination="@id/addDomainOverrideFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addDomainOverrideFragment"
+        android:name="com.sid.websink.fragments.add.addDomainOverrideFragment"
+        android:label="Add domain override"
+        tools:layout="@layout/fragment_add_domain_override" >
+        <action
+            android:id="@+id/action_addDomainOverrideFragment_to_listDomainOverrideFragment"
+            app:destination="@id/listDomainOverrideFragment" />
+    </fragment>
+</navigation>

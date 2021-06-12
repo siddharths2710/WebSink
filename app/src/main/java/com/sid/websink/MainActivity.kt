@@ -1,13 +1,11 @@
-package com.example.websink
+package com.sid.websink
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.Button
@@ -15,6 +13,8 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.chuckerteam.chucker.api.Chucker
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
@@ -93,6 +93,9 @@ class MainActivity : AppCompatActivity() {
 
     }
     private fun configureInit() {
+        setupActionBarWithNavController(findNavController(R.id.navPinFragment))
+        setupActionBarWithNavController(findNavController(R.id.navOverrideFragment))
+
         httpClient = getHttpClient()
         httpClientHandler = Handler(Looper.myLooper()!!)
         chuckerIntent = Chucker.getLaunchIntent(applicationContext)

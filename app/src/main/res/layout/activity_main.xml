@@ -6,6 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <fragment
+        android:id="@+id/navPinFragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/pinner_fragment_nav" />
+
+    <fragment
+        android:id="@+id/navOverrideFragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/domain_override_fragment_nav" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -43,6 +59,7 @@
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/menu_efab"
         android:text="Menu"
+        app:iconTint="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -61,6 +78,7 @@
         android:layout_above="@+id/menu_efab"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="20dp"
+        android:tint="@color/white"
         android:backgroundTint="@color/teal_200"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_baseline_visibility_24" />
@@ -85,6 +103,7 @@
         android:layout_above="@+id/inspect_fab"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="5dp"
+        android:tint="@color/white"
         android:backgroundTint="@color/teal_200"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_baseline_push_pin_24" />
@@ -109,6 +128,7 @@
         android:layout_above="@+id/pin_fab"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="5dp"
+        android:tint="@color/white"
         android:backgroundTint="@color/teal_200"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_baseline_code_24" />

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pinner_fragment_nav"
+    app:startDestination="@id/listPinnerOverrideFragment">
+
+    <fragment
+        android:id="@+id/listPinnerOverrideFragment"
+        android:name="com.sid.websink.fragments.list.listPinnerOverrideFragment"
+        android:label="Cert pinnings"
+        tools:layout="@layout/fragment_list_pinner_override" >
+        <action
+            android:id="@+id/action_listPinnerOverrideFragment_to_addPinnerOverrideFragment"
+            app:destination="@id/addPinnerOverrideFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addPinnerOverrideFragment"
+        android:name="com.sid.websink.fragments.add.addPinnerOverrideFragment"
+        android:label="Pin domain certificate"
+        tools:layout="@layout/fragment_add_pinner_override" >
+        <action
+            android:id="@+id/action_addPinnerOverrideFragment_to_listPinnerOverrideFragment"
+            app:destination="@id/listPinnerOverrideFragment" />
+    </fragment>
+</navigation>

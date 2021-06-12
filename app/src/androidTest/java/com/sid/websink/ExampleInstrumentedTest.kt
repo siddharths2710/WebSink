@@ -1,4 +1,4 @@
-package com.example.websink
+package com.sid.websink
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
