@@ -1,11 +1,12 @@
-package com.example.websink.data
+package com.sid.websink.data
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
 interface PinnerMappingDao {
-    @Query("Select * from pinner_mapping")
-    fun getAll(): List<PinnerMapping>
+    @Query("SELECT * FROM pinner_mapping")
+    fun getAll(): LiveData<List<PinnerMapping>>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun addMapping(mapping: PinnerMapping)

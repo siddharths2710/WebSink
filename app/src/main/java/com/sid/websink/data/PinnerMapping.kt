@@ -1,4 +1,4 @@
-package com.example.websink.data
+package com.sid.websink.data
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

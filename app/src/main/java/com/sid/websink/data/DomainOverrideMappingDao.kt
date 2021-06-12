@@ -1,14 +1,16 @@
-package com.example.websink.data
+package com.sid.websink.data
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
 interface DomainOverrideMappingDao {
-    @Query("Select * from domain_override_mapping")
-    fun getAll(): List<DomainOverrideMapping>
 
-    @Query("Select new_domain from domain_override_mapping where old_domain IN (:oldDomain)")
+    @Query("SELECT new_domain FROM domain_override_mapping WHERE old_domain IN (:oldDomain)")
     fun fetchDomainOverride(oldDomain: String): String
+
+    @Query("SELECT * FROM domain_override_mapping")
+    fun getAll(): LiveData<List<DomainOverrideMapping>>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun addMapping(mapping: DomainOverrideMapping)
