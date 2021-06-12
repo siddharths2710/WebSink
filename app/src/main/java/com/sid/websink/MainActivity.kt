@@ -92,10 +92,9 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-    private fun configureInit() {
-        setupActionBarWithNavController(findNavController(R.id.navPinFragment))
-        setupActionBarWithNavController(findNavController(R.id.navOverrideFragment))
 
+    private fun configureInit() {
+        configureActionBar()
         httpClient = getHttpClient()
         httpClientHandler = Handler(Looper.myLooper()!!)
         chuckerIntent = Chucker.getLaunchIntent(applicationContext)
@@ -104,6 +103,13 @@ class MainActivity : AppCompatActivity() {
         submitBtn = findViewById<Button>(R.id.submit)
         browserView.webViewClient = CustomWebViewClient(applicationContext, httpClient)
     }
+
+    private fun configureActionBar() {
+        setupActionBarWithNavController(findNavController(R.id.navPinFragment))
+        setupActionBarWithNavController(findNavController(R.id.navOverrideFragment))
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
     private fun configureMenuBehaviourInit() {
         mMenuFab = findViewById(R.id.menu_efab)
         mInspectFab = findViewById(R.id.inspect_fab)
