@@ -12,7 +12,7 @@
         android:id="@+id/domainText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="100dp"
         android:ems="10"
         android:gravity="center_horizontal"
         android:hint="Enter domain name for pinning"
@@ -28,22 +28,32 @@
         android:layout_gravity="center_horizontal"
         app:layout_constraintTop_toBottomOf="@+id/domainText" />
 
-    <Button
-        android:id="@+id/certChoostBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Choose Certificate"
-        android:layout_gravity="center_horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/certHashText"
-        android:layout_marginTop="120dp" />
 
     <TextView
         android:id="@+id/pinnerNoteView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="200dp"
         android:text="@string/add_pinner_note"
         android:textAlignment="center"
-        app:layout_constraintTop_toBottomOf="@+id/certChoostBtn"
+        app:layout_constraintTop_toBottomOf="@+id/certHashText"
         tools:layout_editor_absoluteX="176dp" />
+
+    <Button
+        android:id="@+id/certChooseBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose Certificate"
+        android:layout_gravity="center_horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/pinnerNoteView"
+        android:layout_marginTop="50dp" />
+
+    <Button
+        android:id="@+id/submitPinningCfgBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:layout_gravity="center_horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/certChoostBtn"
+        android:layout_marginTop="20dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,29 +5,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.sid.websink.R
 import com.sid.websink.data.DomainOverrideMapping
+import com.sid.websink.data.DomainOverrideViewModel
 import kotlinx.android.synthetic.main.fragment_add_domain_override.*
 import kotlinx.android.synthetic.main.fragment_add_domain_override.view.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [addDomainOverrideFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class addDomainOverrideFragment : Fragment() {
 
+    private lateinit var mDomainOverrideViewModel: DomainOverrideViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
       val view = inflater.inflate(R.layout.fragment_add_domain_override, container, false)
+        mDomainOverrideViewModel = ViewModelProvider(this).get(DomainOverrideViewModel::class.java)
         view.domain_mapping_btn.setOnClickListener {
             insertContentstoDB()
         }
@@ -37,6 +34,11 @@ class addDomainOverrideFragment : Fragment() {
         val new_domain = new_domain_text.text.toString()
         if(domainCheck(old_domain) && domainCheck(new_domain)) {
             val domainMapping = DomainOverrideMapping(old_domain, new_domain)
+            mDomainOverrideViewModel.addMapping(domainMapping)
+            Toast.makeText(requireContext(), "Domain Mappings added to Database", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_addDomainOverrideFragment_to_listDomainOverrideFragment)
+        } else {
+            Toast.makeText(requireContext(), "Please add proper domain", Toast.LENGTH_SHORT).show()
         }
     }
 

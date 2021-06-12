@@ -1,68 +1,104 @@
 package com.sid.websink.fragments.add
 
+import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.FileUtils
+import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultCaller
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.sid.websink.R
+import com.sid.websink.data.PinnerMapping
+import com.sid.websink.data.PinnerViewModel
+import kotlinx.android.synthetic.main.fragment_add_pinner_override.view.*
+import org.w3c.dom.Text
+import java.io.File
+import java.io.RandomAccessFile
+import java.nio.file.Files
+import java.nio.file.Path
+import java.security.MessageDigest
 
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [addPinnerOverrideFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class addPinnerOverrideFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    private enum class TAG{CREATE_VIEW(86), CERT_INTENT, INSERT_DB}
+    private lateinit var  mPinnerViewModel: PinnerViewModel
+    private var domainEntry: String? = null
+    private var certHash: String? = null
+
+    private var certHashTextView: TextView? = null
+    private val getCert = registerForActivityResult(ActivityResultContracts.GetContent()) {uri: Uri? ->
+        val certFile = RandomAccessFile(uri?.path, "r")
+        val certContents = ByteArray(certFile.length() as Int)
+        certFile.readFully(certContents)
+        val md = MessageDigest.getInstance("SHA-256")
+        md.update(certContents)
+        certHash = String(Base64.encode(md.digest(), 0))
+        certHashTextView.text = "sha256/$certHash"
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_pinner_override, container, false)
+        val view = inflater.inflate(R.layout.fragment_add_pinner_override, container, false)
+        certHashTextView = view.certHashText as TextView
+        mPinnerViewModel = ViewModelProvider(this).get(PinnerViewModel::class.java)
+
+        view.certChooseBtn.setOnClickListener {
+            getCert.launch("application/x-x509-ca-cert")
+        }
+        view.submitPinningCfgBtn.setOnClickListener {
+            insertContentstoDB()
+        }
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment addPinnerOverrideFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            addPinnerOverrideFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun insertContentstoDB() {
+        if(!domainCheck(domainEntry)) {
+            Toast.makeText(requireContext(), "Please enter valid domain", Toast.LENGTH_SHORT).show()
+        } else if (!hashCheck(certHash)) {
+            Toast.makeText(requireContext(), "Please upload valid cert", Toast.LENGTH_SHORT).show()
+        } else {
+            val pinnerMapping = PinnerMapping(0, domainEntry, "sha256", certHash)
+            mPinnerViewModel.addMapping(pinnerMapping)
+            Toast.makeText(requireContext(), "Added Pinned mapping", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_addPinnerOverrideFragment_to_listPinnerOverrideFragment)
+        }
     }
 
-    private fun openCertChooser() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "application/x-x509-ca-cert"
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, "application/x-pem-file")
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+    private fun domainCheck(domain: String?):Boolean {
+        return domain != null && domain.isNotEmpty()
     }
+    private fun hashCheck(hash: String?): Boolean {
+        return hash != null && hash.isNotEmpty()
+    }
+    /*private fun openCertChooser() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "application/x-x509-ca-cert";
+            putExtra(Intent.EXTRA_MIME_TYPES, "application/x-pem-file");
+            putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+        }
+        try {
+            startActivityForResult(intent, TAG.CERT_INTENT)
+        } catch (e: ActivityNotFoundException) {
+            Log.e(TAG.CERT_INTENT + "", "openCertChooser: ", e + "")
+        }
+    }*/
+
 }
