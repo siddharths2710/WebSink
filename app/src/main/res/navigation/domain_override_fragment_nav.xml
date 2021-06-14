@@ -2,12 +2,12 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_nav"
+    android:id="@+id/domain_override_fragment_nav"
     app:startDestination="@id/listDomainOverrideFragment">
 
     <fragment
         android:id="@+id/listDomainOverrideFragment"
-        android:name="com.sid.websink.fragments.list.listDomainOverrideFragment"
+        android:name="com.sid.websink.fragments.list.ListDomainOverrideFragment"
         android:label="Domain Mappings"
         tools:layout="@layout/fragment_list_domain_override" >
         <action

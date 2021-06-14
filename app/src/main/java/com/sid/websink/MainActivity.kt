@@ -13,6 +13,8 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.chuckerteam.chucker.api.Chucker
@@ -21,6 +23,8 @@ import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.sid.websink.fragments.list.ListDomainOverrideFragment
+import com.sid.websink.fragments.list.ListPinnerOverrideFragment
 import okhttp3.*
 import java.io.IOException
 import java.lang.Exception
@@ -37,6 +41,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var httpClient: OkHttpClient
     private lateinit var httpClientHandler: Handler
     private lateinit var chuckerIntent: Intent
+    private lateinit var listDomainOverrideFragment: Fragment
+    private lateinit var listPinnerOverrideFragment: Fragment
     private lateinit var submitBtn: Button
     private lateinit var browserView: WebView
     private lateinit var inputAddressField: EditText
@@ -93,6 +99,13 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun loadFragment(fragment: Fragment) {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.main_container_layout, fragment)
+        transaction.addToBackStack(fragment.toString())
+        transaction.commitAllowingStateLoss()
+    }
+
     private fun configureInit() {
         configureActionBar()
         httpClient = getHttpClient()
@@ -101,12 +114,14 @@ class MainActivity : AppCompatActivity() {
         browserView = getBrowserView(R.id.web_sink)
         inputAddressField = findViewById<EditText>(R.id.url_bar)
         submitBtn = findViewById<Button>(R.id.submit)
+        listDomainOverrideFragment = ListDomainOverrideFragment()
+        listPinnerOverrideFragment = ListPinnerOverrideFragment()
         browserView.webViewClient = CustomWebViewClient(applicationContext, httpClient)
     }
 
     private fun configureActionBar() {
-        setupActionBarWithNavController(findNavController(R.id.navPinFragment))
-        setupActionBarWithNavController(findNavController(R.id.navOverrideFragment))
+        //setupActionBarWithNavController(findNavController(R.id.listDomainOverrideFragment))
+        //setupActionBarWithNavController(findNavController(R.id.listPinnerOverrideFragment))
         actionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
@@ -137,11 +152,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         mPinFab.setOnClickListener {
-            Toast.makeText(applicationContext, "Cert Pin", Toast.LENGTH_LONG)
+            Toast.makeText(baseContext, "Cert Pin", Toast.LENGTH_LONG)
+            loadFragment(listPinnerOverrideFragment)
         }
 
         mOverrideFab.setOnClickListener {
-            Toast.makeText(applicationContext, "Domain Override", Toast.LENGTH_SHORT)
+            Toast.makeText(baseContext, "Domain Override", Toast.LENGTH_SHORT)
+            loadFragment(listDomainOverrideFragment)
         }
 
     }

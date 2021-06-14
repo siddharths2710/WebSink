@@ -1,34 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_activity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main_container_layout"
     android:background="#FFFFFF"
     tools:context=".MainActivity">
 
     <fragment
-        android:id="@+id/listPinnerOverrideFragment"
+        android:id="@+id/navPinFragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:defaultNavHost="true"
         app:navGraph="@navigation/pinner_fragment_nav" />
+
     <fragment
-        android:id="@+id/listDomainOverrideFragment"
+        android:id="@+id/navOverrideFragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:defaultNavHost="true"
-        app:navGraph="@navigation/domain_override_fragment_nav"
-        />
-
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/main_activity_layout">
+        app:navGraph="@navigation/domain_override_fragment_nav" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,8 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:hint="@string/domain_hint"
-                android:textAlignment="center"/>
+                android:hint="@string/domain_hint" />
 
             <Button
                 android:id="@+id/submit"
@@ -67,29 +60,34 @@
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/menu_efab"
-        android:text="Menu"
-        app:iconTint="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
         android:layout_marginEnd="10dp"
-        android:visibility="visible"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="10dp"
+
         android:contentDescription="@string/submit"
-        app:icon="@drawable/ic_baseline_menu_24" />
+        android:gravity="bottom"
+        android:text="Menu"
+        android:visibility="visible"
+        app:icon="@drawable/ic_baseline_menu_24"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/inspect_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/menu_efab"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="20dp"
-        android:tint="@color/white"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:backgroundTint="@color/teal_200"
+        android:tint="@color/white"
         app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/menu_efab"
+        app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_baseline_visibility_24" />
 
     <TextView
@@ -97,13 +95,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/menu_efab"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="35dp"
+        android:layout_marginEnd="65dp"
+        android:layout_marginBottom="25dp"
         android:layout_toLeftOf="@+id/inspect_fab"
         android:fontFamily="sans-serif-medium"
-        android:textSize="20sp"
         android:text="Traffic Inspection"
-        android:textStyle="bold" />
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/menu_efab"
+        app:layout_constraintEnd_toEndOf="@id/inspect_fab" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/pin_fab"
@@ -154,6 +154,4 @@
         android:textSize="20sp"
         android:text="URL Override"
         android:textStyle="bold" />
-
-    </RelativeLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

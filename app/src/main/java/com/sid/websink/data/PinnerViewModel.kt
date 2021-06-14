@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PinnerViewModel(application: Application): AndroidViewModel(application) {
-    private val getAll: LiveData<List<PinnerMapping>>
+    val getAll: LiveData<List<PinnerMapping>>
     private val repository: PinnerMappingRepository
 
     init {

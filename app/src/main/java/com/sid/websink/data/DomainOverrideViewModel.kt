@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class DomainOverrideViewModel(application: Application): AndroidViewModel(application) {
-    private val getAll: LiveData<List<DomainOverrideMapping>>
+    val getAll: LiveData<List<DomainOverrideMapping>>
     private val repository: DomainOverrideMappingRepository
 
     init {

@@ -25,6 +25,8 @@ import androidx.navigation.fragment.findNavController
 import com.sid.websink.R
 import com.sid.websink.data.PinnerMapping
 import com.sid.websink.data.PinnerViewModel
+import com.sid.websink.fragments.list.ListDomainOverrideFragment
+import com.sid.websink.fragments.list.ListPinnerOverrideFragment
 import kotlinx.android.synthetic.main.fragment_add_pinner_override.view.*
 import org.w3c.dom.Text
 import java.io.File
@@ -36,20 +38,33 @@ import java.security.MessageDigest
 
 class addPinnerOverrideFragment : Fragment() {
 
-    private enum class TAG{CREATE_VIEW(86), CERT_INTENT, INSERT_DB}
+    private enum class TAG(val id: Int) {
+        CREATE_VIEW(86),
+        CERT_INTENT(87),
+        INSERT_DB(88)
+    }
     private lateinit var  mPinnerViewModel: PinnerViewModel
     private var domainEntry: String? = null
     private var certHash: String? = null
 
     private var certHashTextView: TextView? = null
     private val getCert = registerForActivityResult(ActivityResultContracts.GetContent()) {uri: Uri? ->
-        val certFile = RandomAccessFile(uri?.path, "r")
-        val certContents = ByteArray(certFile.length() as Int)
-        certFile.readFully(certContents)
-        val md = MessageDigest.getInstance("SHA-256")
-        md.update(certContents)
-        certHash = String(Base64.encode(md.digest(), 0))
-        certHashTextView.text = "sha256/$certHash"
+        //Obtain SHA256 fingerprint of locally-stored X.509 cert
+        if(uri?.path != null) {
+            val certFile = RandomAccessFile(uri?.path, "r")
+            val certContents = ByteArray(certFile.length() as Int)
+            certFile.readFully(certContents)
+            val md = MessageDigest.getInstance("SHA-256")
+            md.update(certContents)
+            certHash = String(Base64.encode(md.digest(), 0))
+            certHashTextView?.text = "sha256/$certHash"
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        activity?.actionBar?.title = "Add Cert Pinner Mapping"
+        activity?.actionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onCreateView(
@@ -62,6 +77,7 @@ class addPinnerOverrideFragment : Fragment() {
 
         view.certChooseBtn.setOnClickListener {
             getCert.launch("application/x-x509-ca-cert")
+            view.submitPinningCfgBtn.visibility = View.VISIBLE
         }
         view.submitPinningCfgBtn.setOnClickListener {
             insertContentstoDB()
@@ -78,7 +94,13 @@ class addPinnerOverrideFragment : Fragment() {
             val pinnerMapping = PinnerMapping(0, domainEntry, "sha256", certHash)
             mPinnerViewModel.addMapping(pinnerMapping)
             Toast.makeText(requireContext(), "Added Pinned mapping", Toast.LENGTH_SHORT).show()
-            findNavController().navigate(R.id.action_addPinnerOverrideFragment_to_listPinnerOverrideFragment)
+
+            //findNavController().navigate(R.id.action_addPinnerOverrideFragment_to_listPinnerOverrideFragment)
+            childFragmentManager.popBackStack()
+            val listFragment = ListPinnerOverrideFragment()
+            val transaction = childFragmentManager.beginTransaction()
+            transaction.replace(R.id.addPinnerOverrideFragmentLayout, listFragment)
+            transaction.commitAllowingStateLoss()
         }
     }
 

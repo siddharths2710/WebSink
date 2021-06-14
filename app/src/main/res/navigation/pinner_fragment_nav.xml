@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/listPinnerOverrideFragment"
-        android:name="com.sid.websink.fragments.list.listPinnerOverrideFragment"
+        android:name="com.sid.websink.fragments.list.ListPinnerOverrideFragment"
         android:label="Cert pinnings"
         tools:layout="@layout/fragment_list_pinner_override" >
         <action

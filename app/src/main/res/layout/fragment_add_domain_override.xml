@@ -5,6 +5,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.add.addDomainOverrideFragment"
+    android:id="@+id/addDomainOverrideFragmentLayout"
+    android:background="#FFFFFF"
     android:padding="24dp">
 
     <EditText
@@ -36,11 +38,10 @@
 
     <Button
         android:id="@+id/domain_mapping_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:text="Button"
-        android:gravity="center_horizontal"
+        android:text="Submit"
         app:layout_constraintTop_toBottomOf="@+id/new_domain_text"
         tools:layout_editor_absoluteX="140dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

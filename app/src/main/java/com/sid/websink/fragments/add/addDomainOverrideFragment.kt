@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.sid.websink.R
 import com.sid.websink.data.DomainOverrideMapping
 import com.sid.websink.data.DomainOverrideViewModel
+import com.sid.websink.fragments.list.ListDomainOverrideFragment
 import kotlinx.android.synthetic.main.fragment_add_domain_override.*
 import kotlinx.android.synthetic.main.fragment_add_domain_override.view.*
 
@@ -18,6 +19,12 @@ import kotlinx.android.synthetic.main.fragment_add_domain_override.view.*
 class addDomainOverrideFragment : Fragment() {
 
     private lateinit var mDomainOverrideViewModel: DomainOverrideViewModel
+
+    override fun onStart() {
+        super.onStart()
+        activity?.actionBar?.title = "Add Domain Mapping"
+        activity?.actionBar?.setDisplayHomeAsUpEnabled(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +35,7 @@ class addDomainOverrideFragment : Fragment() {
         view.domain_mapping_btn.setOnClickListener {
             insertContentstoDB()
         }
+        return view
     }
     private fun insertContentstoDB() {
         val old_domain = old_domain_text.text.toString()
@@ -36,7 +44,14 @@ class addDomainOverrideFragment : Fragment() {
             val domainMapping = DomainOverrideMapping(old_domain, new_domain)
             mDomainOverrideViewModel.addMapping(domainMapping)
             Toast.makeText(requireContext(), "Domain Mappings added to Database", Toast.LENGTH_SHORT).show()
-            findNavController().navigate(R.id.action_addDomainOverrideFragment_to_listDomainOverrideFragment)
+
+            //findNavController().navigate(R.id.action_addDomainOverrideFragment_to_listDomainOverrideFragment)
+            childFragmentManager.popBackStack()
+            //val listFragment = ListDomainOverrideFragment()
+            //val transaction = childFragmentManager.beginTransaction()
+            //transaction.replace(R.id.addDomainOverrideFragmentLayout, listFragment)
+            //transaction.commitAllowingStateLoss()
+
         } else {
             Toast.makeText(requireContext(), "Please add proper domain", Toast.LENGTH_SHORT).show()
         }
