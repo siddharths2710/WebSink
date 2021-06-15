@@ -5,26 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#FFFFFF"
+    android:backgroundTint="#E83858CD"
     android:padding="25dp">
 
     <TextView
-        android:id="@+id/oldDomainRowView"
+        android:id="@+id/oldDomainRowHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="old domain"
+        android:text="Old Domain"
         android:textAlignment="center"
         android:textSize="20dp"
+        android:textColor="@color/white"
+        android:textAllCaps="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/newDomainRowView"
+        android:id="@+id/newDomainRowHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="20dp"
-        android:hint="new domain"
+        android:text="New Domain"
         android:textAlignment="center"
         android:textSize="20dp"
+        android:textColor="@color/white"
+        android:textAllCaps="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

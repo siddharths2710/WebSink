@@ -1,21 +1,16 @@
 package com.sid.websink.fragments.list
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sid.websink.R
 import com.sid.websink.data.PinnerViewModel
-import com.sid.websink.fragments.add.addDomainOverrideFragment
 import com.sid.websink.fragments.add.addPinnerOverrideFragment
-import kotlinx.android.synthetic.main.fragment_add_pinner_override.*
-import kotlinx.android.synthetic.main.fragment_list_domain_override.view.*
 import kotlinx.android.synthetic.main.fragment_list_pinner_override.view.*
 
 

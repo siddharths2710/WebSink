@@ -14,8 +14,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.navigation.findNavController
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.chuckerteam.chucker.api.Chucker
 import com.chuckerteam.chucker.api.ChuckerCollector
@@ -23,6 +25,8 @@ import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.sid.websink.data.DomainOverrideViewModel
+import com.sid.websink.data.PinnerViewModel
 import com.sid.websink.fragments.list.ListDomainOverrideFragment
 import com.sid.websink.fragments.list.ListPinnerOverrideFragment
 import okhttp3.*
@@ -38,8 +42,7 @@ import java.lang.IllegalArgumentException
 * */
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var httpClient: OkHttpClient
-    private lateinit var httpClientHandler: Handler
+    private lateinit var domainHandler: DomainHandler
     private lateinit var chuckerIntent: Intent
     private lateinit var listDomainOverrideFragment: Fragment
     private lateinit var listPinnerOverrideFragment: Fragment
@@ -53,8 +56,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mInspectText: TextView
     private lateinit var mPinText: TextView
     private lateinit var mOverrideText: TextView
+    private lateinit var mPinnerViewModel: PinnerViewModel
+    private lateinit var mDomainOverrideViewModel: DomainOverrideViewModel
     private var areFabsVisibile: Boolean = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,11 +69,12 @@ class MainActivity : AppCompatActivity() {
         browserView.loadUrl("https://ipchicken.com")
 
         submitBtn.setOnClickListener {
-            val addr = inputAddressField.text.toString()
-            if(addr.isNotEmpty() && isValidFqdn(addr)) {
+            var addr = inputAddressField.text.toString()
+            if(addr.isNotEmpty() && domainHandler.isValidDomain(addr)) {
+                addr = domainHandler.sanitizeDomain(addr)
                 val req = Request.Builder().url(addr).build()
                 try {
-                    val callObj = httpClient.newCall(req)
+                    val callObj = domainHandler.getClientProcess(req)
                     callObj.enqueue(object : Callback {
                         override fun onFailure(call: Call, e: IOException) {
                             e.printStackTrace()
@@ -78,9 +83,10 @@ class MainActivity : AppCompatActivity() {
                         override fun onResponse(call: Call, response: Response) {
                             response.use {
                                 if(!response.isSuccessful) throw IOException("Unexpected code $response")
-                                httpClientHandler.post {
-                                    browserView.loadDataWithBaseURL(addr, response.body().toString(),
-                                                "text/html", "UTF-8", null)
+                                domainHandler.getClientHandler().post {
+                                    /*browserView.loadDataWithBaseURL(addr, response.body().toString(),
+                                    "text/html", "UTF-8", null)*/
+                                    browserView.loadUrl(addr)
                                 }
                             }
                         }
@@ -108,16 +114,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun configureInit() {
         configureActionBar()
-        httpClient = getHttpClient()
-        httpClientHandler = Handler(Looper.myLooper()!!)
-        chuckerIntent = Chucker.getLaunchIntent(applicationContext)
-        browserView = getBrowserView(R.id.web_sink)
+        domainHandler = DomainHandler.getDomainHandler(applicationContext)
         inputAddressField = findViewById<EditText>(R.id.url_bar)
         submitBtn = findViewById<Button>(R.id.submit)
         listDomainOverrideFragment = ListDomainOverrideFragment()
         listPinnerOverrideFragment = ListPinnerOverrideFragment()
-        browserView.webViewClient = CustomWebViewClient(applicationContext, httpClient)
+        mPinnerViewModel = ViewModelProvider(this).get(PinnerViewModel::class.java)
+        mDomainOverrideViewModel =  ViewModelProvider(this).get(DomainOverrideViewModel::class.java)
+
+        domainHandler.httpClient = getHttpClient()
+        domainHandler.httpClientHandler = Handler(Looper.myLooper()!!)
+        chuckerIntent = Chucker.getLaunchIntent(applicationContext)
+        browserView = getBrowserView(R.id.web_sink)
+        browserView.webViewClient = getCustomWebViewClient()
     }
+
 
     private fun configureActionBar() {
         //setupActionBarWithNavController(findNavController(R.id.listDomainOverrideFragment))
@@ -179,16 +190,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun isValidFqdn(domain: String): Boolean {
-        val domainRegex = Regex("^(((([A-Za-z0-9]+){1,63}\\.)|(([A-Za-z0-9]+(\\-)+[A-Za-z0-9]+){1,63}\\.))+){1,255}$")
-        return true
-    }
 
+    private fun getCustomWebViewClient(): CustomWebViewClient {
+        val customWebViewClient = CustomWebViewClient(applicationContext)
+        mDomainOverrideViewModel.getAll.observe(this, Observer { domainMappingList ->
+            domainHandler.setDomainOverrideMappings(domainMappingList)
+        })
+        return customWebViewClient
+    }
     private fun getHttpClient(): OkHttpClient {
         val okHttpClient: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(getInterceptor())
+            .certificatePinner(getCertPinner())
             .build()
         return okHttpClient
+    }
+
+    private fun getCertPinner(): CertificatePinner {
+        val certPinnerBuilder = CertificatePinner.Builder()
+        mPinnerViewModel.getAll.observe(this, Observer { pinnerMappingList ->
+            for(pinnerMapping in pinnerMappingList) {
+                certPinnerBuilder.add(pinnerMapping?.domain, "$pinnerMapping?.hashType/$pinnerMapping.hashVal")
+            }
+        })
+        return certPinnerBuilder.build()
     }
 
     private fun getInterceptor(): ChuckerInterceptor {
