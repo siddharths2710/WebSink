@@ -1,6 +1,11 @@
 package com.sid.websink
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.PorterDuff
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,6 +18,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -27,6 +33,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sid.websink.data.DomainOverrideViewModel
 import com.sid.websink.data.PinnerViewModel
+import com.sid.websink.fragments.add.addPinnerOverrideFragment
 import com.sid.websink.fragments.list.ListDomainOverrideFragment
 import com.sid.websink.fragments.list.ListPinnerOverrideFragment
 import okhttp3.*
@@ -42,6 +49,7 @@ import java.lang.IllegalArgumentException
 * */
 class MainActivity : AppCompatActivity() {
 
+    private val PERMISSIONS_REQUEST_CODE = 5
     private lateinit var domainHandler: DomainHandler
     private lateinit var chuckerIntent: Intent
     private lateinit var listDomainOverrideFragment: Fragment
@@ -70,39 +78,10 @@ class MainActivity : AppCompatActivity() {
 
         submitBtn.setOnClickListener {
             var addr = inputAddressField.text.toString()
-            if(addr.isNotEmpty() && domainHandler.isValidDomain(addr)) {
-                addr = domainHandler.sanitizeDomain(addr)
-                val req = Request.Builder().url(addr).build()
-                try {
-                    val callObj = domainHandler.getClientProcess(req)
-                    callObj.enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            e.printStackTrace()
-                        }
-
-                        override fun onResponse(call: Call, response: Response) {
-                            response.use {
-                                if(!response.isSuccessful) throw IOException("Unexpected code $response")
-                                domainHandler.getClientHandler().post {
-                                    /*browserView.loadDataWithBaseURL(addr, response.body().toString(),
-                                    "text/html", "UTF-8", null)*/
-                                    browserView.loadUrl(addr)
-                                }
-                            }
-                        }
-                    })
-                } catch (e: IllegalArgumentException) {
-                    Toast.makeText(applicationContext, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    Log.e("onCreate", "addr: $addr")
-                    e.printStackTrace()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            } else {
-                Toast.makeText(applicationContext, "Invalid URL $addr", Toast.LENGTH_SHORT).show()
+            if(addr.length > 0 && domainHandler.isValidDomain(addr)) {
+                browserView.loadUrl(addr)
             }
         }
-
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -113,6 +92,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureInit() {
+        validatePermissions()
         configureActionBar()
         domainHandler = DomainHandler.getDomainHandler(applicationContext)
         inputAddressField = findViewById<EditText>(R.id.url_bar)
@@ -129,7 +109,22 @@ class MainActivity : AppCompatActivity() {
         browserView.webViewClient = getCustomWebViewClient()
     }
 
+    private fun validatePermissions() {
+        var pendingPermissions: MutableList<String> = emptyArray<String>().toMutableList()
 
+        if(ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED)
+                pendingPermissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        if(ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.INTERNET)
+            != PackageManager.PERMISSION_GRANTED)
+            pendingPermissions.add(Manifest.permission.INTERNET)
+        if(ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_NETWORK_STATE)
+            != PackageManager.PERMISSION_GRANTED)
+            pendingPermissions.add(Manifest.permission.ACCESS_NETWORK_STATE)
+        if(pendingPermissions.size > 0)
+            requestPermissions(pendingPermissions.toTypedArray(), PERMISSIONS_REQUEST_CODE)
+
+    }
     private fun configureActionBar() {
         //setupActionBarWithNavController(findNavController(R.id.listDomainOverrideFragment))
         //setupActionBarWithNavController(findNavController(R.id.listPinnerOverrideFragment))
@@ -149,10 +144,12 @@ class MainActivity : AppCompatActivity() {
         toggleVisibility()
 
         mMenuFab.setOnClickListener {
-            if(!areFabsVisibile)
+            if(!areFabsVisibile) {
                 mMenuFab.extend()
-            else
+            }
+            else {
                 mMenuFab.shrink()
+            }
             areFabsVisibile = !areFabsVisibile
             toggleVisibility()
         }
@@ -210,7 +207,7 @@ class MainActivity : AppCompatActivity() {
         val certPinnerBuilder = CertificatePinner.Builder()
         mPinnerViewModel.getAll.observe(this, Observer { pinnerMappingList ->
             for(pinnerMapping in pinnerMappingList) {
-                certPinnerBuilder.add(pinnerMapping?.domain, "$pinnerMapping?.hashType/$pinnerMapping.hashVal")
+                certPinnerBuilder.add(pinnerMapping?.domain, "${pinnerMapping?.hashType}/${pinnerMapping.hashVal}")
             }
         })
         return certPinnerBuilder.build()
@@ -234,10 +231,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun getBrowserView(id: Int): WebView {
         val webSink: WebView = findViewById(id)
-        webSink.settings.javaScriptEnabled = true;
-        webSink.settings.useWideViewPort = true;
-        webSink.settings.loadWithOverviewMode = true;
-        webSink.settings.cacheMode = WebSettings.LOAD_NO_CACHE;
+        webSink.settings.javaScriptEnabled = true
+        webSink.settings.useWideViewPort = true
+        webSink.settings.loadWithOverviewMode = true
+        webSink.settings.cacheMode = WebSettings.LOAD_NO_CACHE
+        webSink.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         return webSink
     }
 

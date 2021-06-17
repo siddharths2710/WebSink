@@ -27,6 +27,8 @@ class DomainHandler {
     }
 
     fun sanitizeDomain(domain: String): String {
+        if(domain.length == 0) //Blacklist
+            return domain
         var newDomain = domain
         if(domainMappings != null && domainMappings!!.containsKey(newDomain))
             newDomain = domainMappings!![newDomain].toString()
@@ -55,8 +57,8 @@ class DomainHandler {
     }
 
     fun isValidDomain(domain: String): Boolean {
-        val domainRegex = Regex("^(?!-)[A-Za-z0-9-]+([\\-\\.]{1}[a-z0-9]+)*\\.[A-Za-z]{2,6}$")
-        if((domain != null) && domain.isNotEmpty() && domainRegex.matches(domain)) {
+        val domainRegex = Regex("(?!-)[A-Za-z0-9-]+([\\-\\.]{1}[a-z0-9]+)*\\.[A-Za-z]{2,6}")
+        if((domain != null) && domain.isNotEmpty() && domainRegex.containsMatchIn(domain)) {
             return true
         }
         return false

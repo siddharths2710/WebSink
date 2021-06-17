@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#FFFFFF"
-    android:backgroundTint="#E83858CD"
+    android:backgroundTint="@color/colorSecondary"
     android:padding="25dp">
 
     <TextView
@@ -14,9 +14,11 @@
         android:layout_height="wrap_content"
         android:text="Old Domain"
         android:textAlignment="center"
-        android:textSize="20dp"
+        android:textSize="18dp"
+        android:textStyle="bold"
         android:textColor="@color/white"
         android:textAllCaps="true"
+        android:fontFamily="sans-serif-light"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,12 +26,14 @@
         android:id="@+id/newDomainRowHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="15dp"
         android:text="New Domain"
         android:textAlignment="center"
-        android:textSize="20dp"
+        android:textSize="18dp"
+        android:textStyle="bold"
         android:textColor="@color/white"
         android:textAllCaps="true"
+        android:fontFamily="sans-serif-light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
