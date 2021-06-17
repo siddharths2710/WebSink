@@ -37,8 +37,10 @@ class ListPinnerOverrideFragment : Fragment() {
         mPinnerViewModel.getAll.observe(viewLifecycleOwner, Observer { pinnerMapping ->
             adapter.setData(pinnerMapping)
         })
+
+        view.pinnerMenuFab.show()
         view.pinnerMenuFab.setOnClickListener {
-            //findNavController().navigate(R.id.action_listPinnerOverrideFragment_to_addPinnerOverrideFragment)
+            view.pinnerMenuFab.hide()
             val addFragment = addPinnerOverrideFragment()
             val transaction = childFragmentManager.beginTransaction()
             transaction.replace(R.id.listPinnerOverrideFragmentLayout, addFragment)

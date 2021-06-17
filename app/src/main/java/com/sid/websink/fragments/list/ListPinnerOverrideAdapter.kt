@@ -33,8 +33,9 @@ class ListPinnerOverrideAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>()
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if(holder is ItemViewHolder) {
             val currentItem = pinnerOverrideList[position - 1]
+            holder.itemView.pinnerRowIdView.text = position.toString()
             holder.itemView.pinnerDomainRowView.text = currentItem.domain.toString()
-            holder.itemView.pinnerFingerprintRowView.text = "${currentItem.hashType.toString()}/${currentItem.hashVal.toString()}"
+            holder.itemView.pinnerHashRowView.text = currentItem.hashType.toString()
         }
 
     }

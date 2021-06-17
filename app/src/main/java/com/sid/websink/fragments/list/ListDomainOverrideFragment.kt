@@ -45,10 +45,11 @@ class ListDomainOverrideFragment : Fragment() {
             adapter.setData(domainOverrideMapping)
         })
 
+        view.domainOverrideMenuFab.show()
         view.domainOverrideMenuFab.setOnClickListener {
-            //Navigation.findNavController(view).navigate(R.id.action_listDomainOverrideFragment_to_addDomainOverrideFragment)
             val addFragment = addDomainOverrideFragment()
             val transaction = childFragmentManager.beginTransaction()
+            view.domainOverrideMenuFab.hide()
             transaction.replace(R.id.listDomainOverrideFragmentLayout, addFragment)
             transaction.addToBackStack(addFragment.toString())
             transaction.commitAllowingStateLoss()

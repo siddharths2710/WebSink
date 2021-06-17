@@ -28,13 +28,15 @@ class ListDomainOverrideAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>()
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        /*val currentItem = domainOverrideList[position]
-        holder.itemView.oldDomainRowView.text = currentItem.oldDomain.toString()
-        holder.itemView.newDomainRowView.text = currentItem.newDomain.toString()*/
         if(holder is ItemViewHolder) {
             val currentItem = domainOverrideList[position - 1]
-            holder.itemView.oldDomainRowView.text = currentItem.oldDomain
-            holder.itemView.newDomainRowView.text = currentItem.newDomain.toString()
+            val oldDomain = currentItem.oldDomain
+            val newDomain = currentItem.newDomain
+            holder.itemView.oldDomainRowView.text = oldDomain
+            if(newDomain == null || newDomain.isEmpty())
+                holder.itemView.newDomainRowView.text = "BLOCKED"
+            else
+                holder.itemView.newDomainRowView.text = currentItem.newDomain.toString()
         }
     }
 
