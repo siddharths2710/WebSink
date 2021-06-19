@@ -14,4 +14,5 @@
     <color name="colorSecondary">#0C84A8</color>
     <color name="colorSecondaryDark">#0E3D9A</color>
     <color name="colorSecondaryLight">#F2CADFDF</color>
+    <color name="infographic">#0764DF</color>
 </resources>
