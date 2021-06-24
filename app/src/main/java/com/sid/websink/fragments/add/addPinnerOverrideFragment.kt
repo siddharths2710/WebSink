@@ -1,9 +1,6 @@
 package com.sid.websink.fragments.add
 
 import android.Manifest
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -15,29 +12,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultCaller
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.ActivityResultRegistry
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.sid.websink.DomainHandler
 import com.sid.websink.R
 import com.sid.websink.data.PinnerMapping
 import com.sid.websink.data.PinnerViewModel
-import com.sid.websink.fragments.list.ListDomainOverrideFragment
 import com.sid.websink.fragments.list.ListPinnerOverrideFragment
 import kotlinx.android.synthetic.main.fragment_add_pinner_override.view.*
-import org.w3c.dom.Text
-import java.io.File
 import java.io.RandomAccessFile
 import java.lang.Exception
-import java.nio.file.Files
-import java.nio.file.Path
 import java.security.MessageDigest
 
 
@@ -61,7 +48,7 @@ class addPinnerOverrideFragment : Fragment() {
 
         if(ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), TAG.READ_EXT_STORAGE as Int)
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), TAG.READ_EXT_STORAGE.id)
         }
         try {
             //Obtain SHA256 fingerprint of locally-stored X.509 cert
@@ -121,6 +108,10 @@ class addPinnerOverrideFragment : Fragment() {
             Toast.makeText(requireContext(), "Added Pinned mapping", Toast.LENGTH_SHORT).show()
 
             childFragmentManager.popBackStack()
+            parentFragmentManager.setFragmentResult(
+                "trusted_fragment",
+                bundleOf("REFRESH_MAIN" to true)
+            )
             val listFragment = ListPinnerOverrideFragment()
             val transaction = childFragmentManager.beginTransaction()
             transaction.replace(R.id.addPinnerOverrideFragmentLayout, listFragment)

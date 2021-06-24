@@ -17,12 +17,25 @@ class DomainHandler {
         @Volatile
         private var INSTANCE: DomainHandler? = null
 
-        fun getDomainHandler(context: Context): DomainHandler {
+        @Volatile
+        private var blockPageStr: String? = null
+
+        fun getDomainHandler(ctx: Context): DomainHandler {
             val tempInstance = INSTANCE
             if(tempInstance != null)
                 return tempInstance
             INSTANCE = DomainHandler()
             return INSTANCE as DomainHandler
+        }
+
+        fun getBlockPageAsString(ctx: Context): String {
+            val tempStr = blockPageStr
+            if(tempStr != null)
+                return tempStr
+            blockPageStr = ctx.assets.open("block_page.html").bufferedReader().use {
+                it.readText()
+            }
+            return blockPageStr as String
         }
     }
 
@@ -45,9 +58,6 @@ class DomainHandler {
         return newDomain
     }
 
-    fun getClientHandler(): Handler {
-        return httpClientHandler!!
-    }
     fun getClientProcess(req: Request): Call {
         return httpClient!!.newCall(req)
     }
@@ -62,5 +72,10 @@ class DomainHandler {
             return true
         }
         return false
+    }
+
+    fun checkMimeType(domain: String): Boolean {
+        val mimeRegex = Regex("[-\\w.]+/[-\\w.]+")
+        return domain != null && mimeRegex.containsMatchIn(domain)
     }
 }

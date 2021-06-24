@@ -14,6 +14,7 @@ import com.sid.websink.data.DomainOverrideViewModel
 import kotlinx.android.synthetic.main.fragment_list_domain_override.view.*
 import kotlinx.android.synthetic.main.fragment_list_pinner_override.view.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.sid.websink.fragments.add.addDomainOverrideFragment
@@ -28,6 +29,7 @@ class ListDomainOverrideFragment : Fragment() {
         super.onStart()
         activity?.actionBar?.title = "Domain Overrides"
         activity?.actionBar?.setDisplayHomeAsUpEnabled(true)
+
     }
 
     override fun onCreateView(
@@ -55,6 +57,14 @@ class ListDomainOverrideFragment : Fragment() {
             transaction.commitAllowingStateLoss()
         }
         return view
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        childFragmentManager.setFragmentResult(
+            "trusted_fragment",
+            bundleOf("REFRESH_MAIN" to true)
+        )
     }
 
 }

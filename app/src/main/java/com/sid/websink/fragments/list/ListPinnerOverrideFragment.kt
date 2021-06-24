@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -48,5 +49,13 @@ class ListPinnerOverrideFragment : Fragment() {
             transaction.commitAllowingStateLoss()
         }
         return view
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        childFragmentManager.setFragmentResult(
+            "trusted_fragment",
+            bundleOf("REFRESH_MAIN" to true)
+        )
     }
 }

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import com.sid.websink.DomainHandler
 import com.sid.websink.R
@@ -57,8 +58,11 @@ class addDomainOverrideFragment : Fragment() {
             val domainMapping = DomainOverrideMapping(old_domain, new_domain)
             mDomainOverrideViewModel.addMapping(domainMapping)
             Toast.makeText(requireContext(), "Domain Mappings added to Database", Toast.LENGTH_SHORT).show()
-            parentFragmentManager.popBackStackImmediate()
-
+            childFragmentManager.popBackStackImmediate()
+            childFragmentManager.setFragmentResult(
+                "trusted_fragment",
+                bundleOf("REFRESH_MAIN" to true)
+            )
         } else {
             Toast.makeText(requireContext(), "Please add proper domain", Toast.LENGTH_SHORT).show()
         }

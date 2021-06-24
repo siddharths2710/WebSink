@@ -15,6 +15,8 @@ class CustomWebViewClient(appContext: Context): WebViewClient() {
         view: WebView?,
         request: WebResourceRequest?
     ): WebResourceResponse? {
+        if(domainHandler.checkMimeType(request?.url?.toString()!!))
+            return super.shouldInterceptRequest(view, request)
         val httpResponse = domainHandler.getClientProcess(getInternalRequestBuilder(request).build()).execute()
         val contentType = httpResponse.header("Content-Type")
         if(contentType != null) {
@@ -28,15 +30,18 @@ class CustomWebViewClient(appContext: Context): WebViewClient() {
 
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
         //domainHandler.getClientProcess(getInternalRequestBuilder(request).build()).execute()
+        var url = request?.url?.toString()
+        if (request != null && url != null && !domainHandler.isValidDomain(url!!))
+            return true
         return super.shouldOverrideUrlLoading(view, request)
     }
 
     private fun getInternalRequestBuilder(request: WebResourceRequest?): Request.Builder {
         val builder: Request.Builder = Request.Builder()
-        var domain = request?.url?.toString()
-        if (request != null && domain != null && domainHandler.isValidDomain(domain!!)) {
-            domain = domainHandler.getMappedDomain(domain!!)
-            builder.url(domainHandler.sanitizeDomain(domain))
+        var url = request?.url?.toString()
+        if (request != null && url != null && domainHandler.isValidDomain(url!!)) {
+            url = domainHandler.getMappedDomain(url!!)
+            builder.url(domainHandler.sanitizeDomain(url))
             if(request.requestHeaders != null) {
                 for((key, value) in request.requestHeaders) {
                     builder.addHeader(key, value)

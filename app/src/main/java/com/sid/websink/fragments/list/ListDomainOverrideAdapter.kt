@@ -34,7 +34,7 @@ class ListDomainOverrideAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>()
             val newDomain = currentItem.newDomain
             holder.itemView.oldDomainRowView.text = oldDomain
             if(newDomain == null || newDomain.isEmpty())
-                holder.itemView.newDomainRowView.text = "BLOCKED"
+                holder.itemView.newDomainRowView.text = "------"
             else
                 holder.itemView.newDomainRowView.text = currentItem.newDomain.toString()
         }

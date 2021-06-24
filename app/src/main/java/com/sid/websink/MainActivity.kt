@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.webkit.WebSettings
@@ -20,6 +21,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -37,9 +39,6 @@ import com.sid.websink.fragments.add.addPinnerOverrideFragment
 import com.sid.websink.fragments.list.ListDomainOverrideFragment
 import com.sid.websink.fragments.list.ListPinnerOverrideFragment
 import okhttp3.*
-import java.io.IOException
-import java.lang.Exception
-import java.lang.IllegalArgumentException
 
 /*
 * Functionalities of WebSink Web Honeypot:
@@ -49,6 +48,8 @@ import java.lang.IllegalArgumentException
 * */
 class MainActivity : AppCompatActivity() {
 
+    private var CHECK_PAUSE = false
+    private var CHECK_RESTART = false
     private val PERMISSIONS_REQUEST_CODE = 5
     private lateinit var domainHandler: DomainHandler
     private lateinit var chuckerIntent: Intent
@@ -77,9 +78,14 @@ class MainActivity : AppCompatActivity() {
         browserView.loadUrl("https://ipchicken.com")
 
         submitBtn.setOnClickListener {
-            var addr = inputAddressField.text.toString()
-            if(addr.length > 0 && domainHandler.isValidDomain(addr)) {
+            var addr = domainHandler.getMappedDomain(inputAddressField.text.toString())
+            if(addr != null && addr.length > 0 && domainHandler.isValidDomain(addr)) {
                 browserView.loadUrl(addr)
+            } else {
+                val block_page = DomainHandler.getBlockPageAsString(applicationContext)
+                val encodedHtml = Base64.encodeToString(block_page.toByteArray(), Base64.NO_PADDING)
+                browserView.loadData(encodedHtml, "text/html", "base64")
+
             }
         }
     }
@@ -92,6 +98,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureInit() {
+        setDefaultExceptionHandler()
         validatePermissions()
         configureActionBar()
         domainHandler = DomainHandler.getDomainHandler(applicationContext)
@@ -107,6 +114,23 @@ class MainActivity : AppCompatActivity() {
         chuckerIntent = Chucker.getLaunchIntent(applicationContext)
         browserView = getBrowserView(R.id.web_sink)
         browserView.webViewClient = getCustomWebViewClient()
+        supportFragmentManager.setFragmentResultListener(
+            "trusted_fragment",
+            this,
+            FragmentResultListener { requestKey, result -> recreate() })
+    }
+
+    private fun setDefaultExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
+            var emailBodyStr = "Forwarding customer trace of a WebSandbox failure.\n"
+            emailBodyStr = "$emailBodyStr ${e.message} \nTrace: \n${Log.getStackTraceString(e)}"
+            val supportEmailIntent = Intent(Intent.ACTION_SEND)
+            supportEmailIntent.setType(Intent.ACTION_SENDTO)
+            intent.putExtra(Intent.EXTRA_EMAIL, "support.websandboxsink@protonmail.com")
+            intent.putExtra(Intent.EXTRA_SUBJECT, "WebSandbox: Unexpected Failure");
+            intent.putExtra(Intent.EXTRA_TEXT, emailBodyStr)
+            startActivity(Intent.createChooser(intent, "Reach out to support for unexpected failure"))
+        }
     }
 
     private fun validatePermissions() {
