@@ -14,7 +14,7 @@ android {
         applicationId "com.sid.websink"
         minSdkVersion 24
         targetSdkVersion 30
-        versionName "0.1.0"
+        versionName "0.1.1"
         def verParsed = versionName.split(/\./).collect { Integer.parseInt(it) }
         versionCode ((verParsed[0] * 1000000) + (verParsed[1] * 1000) + (verParsed[2] * 10) + 1)
 
@@ -69,7 +69,5 @@ dependencies {
     //OkHttp
     implementation 'com.squareup.okhttp3:okhttp'
     //Chucker
-    debugImplementation "com.github.chuckerteam.chucker:library:$chucker_version"
-    releaseImplementation "com.github.chuckerteam.chucker:library-no-op:$chucker_version"
-
+    implementation "com.github.chuckerteam.chucker:library:$chucker_version"
 }

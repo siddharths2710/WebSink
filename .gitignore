@@ -1,5 +1,9 @@
 *.iml
 *.swp
+*.apk
+*.aab
+*.class
+*.dex
 .gradle
 /app/debug
 /app/release
