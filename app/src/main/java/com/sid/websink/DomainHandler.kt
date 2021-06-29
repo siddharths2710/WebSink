@@ -51,7 +51,7 @@ class DomainHandler {
     }
 
     fun getMappedDomain(oldDomain: String): String {
-        var newDomain: String = oldDomain
+        var newDomain: String = oldDomain.trim()
         if(isValidDomain(oldDomain) && domainMappings != null && domainMappings?.containsKey(oldDomain) == true) {
             newDomain = domainMappings!![oldDomain].toString()
         }
