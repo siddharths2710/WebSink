@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         configureInit()
         configureMenuBehaviourInit()
         browserView.loadUrl("https://ipchicken.com")
+        browserView.settings.builtInZoomControls = true
 
         submitBtn.setOnClickListener {
             var addr = domainHandler.getMappedDomain(inputAddressField.text.toString())
