@@ -3,9 +3,6 @@ package com.sid.websink
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
-import android.graphics.PorterDuff
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,15 +15,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupActionBarWithNavController
+
 import com.chuckerteam.chucker.api.Chucker
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
@@ -35,10 +31,11 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sid.websink.data.DomainOverrideViewModel
 import com.sid.websink.data.PinnerViewModel
-import com.sid.websink.fragments.add.addPinnerOverrideFragment
 import com.sid.websink.fragments.list.ListDomainOverrideFragment
 import com.sid.websink.fragments.list.ListPinnerOverrideFragment
-import okhttp3.*
+
+import okhttp3.OkHttpClient
+import okhttp3.CertificatePinner
 
 /*
 * Functionalities of WebSink Web Honeypot:
@@ -48,8 +45,6 @@ import okhttp3.*
 * */
 class MainActivity : AppCompatActivity() {
 
-    private var CHECK_PAUSE = false
-    private var CHECK_RESTART = false
     private val PERMISSIONS_REQUEST_CODE = 5
     private lateinit var domainHandler: DomainHandler
     private lateinit var chuckerIntent: Intent
@@ -76,7 +71,6 @@ class MainActivity : AppCompatActivity() {
         configureInit()
         configureMenuBehaviourInit()
         browserView.loadUrl("https://ipchicken.com")
-        browserView.settings.builtInZoomControls = true
 
         submitBtn.setOnClickListener {
             var addr = domainHandler.getMappedDomain(inputAddressField.text.toString())
@@ -115,6 +109,7 @@ class MainActivity : AppCompatActivity() {
         chuckerIntent = Chucker.getLaunchIntent(applicationContext)
         browserView = getBrowserView(R.id.web_sink)
         browserView.webViewClient = getCustomWebViewClient()
+
         supportFragmentManager.setFragmentResultListener(
             "trusted_fragment",
             this,
@@ -259,6 +254,8 @@ class MainActivity : AppCompatActivity() {
         webSink.settings.javaScriptEnabled = true
         webSink.settings.useWideViewPort = true
         webSink.settings.loadWithOverviewMode = true
+        webSink.settings.builtInZoomControls = true
+        webSink.settings.displayZoomControls = false
         webSink.settings.cacheMode = WebSettings.LOAD_NO_CACHE
         webSink.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         return webSink
