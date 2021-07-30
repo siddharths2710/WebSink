@@ -1,4 +1,4 @@
-name: Build and Validate App
+name: Build
 
 on:
   push:
